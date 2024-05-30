@@ -2,7 +2,13 @@ import express from "express";
 import cors from "cors";
 import passport from "passport";
 import "./Middlewares/Passport.Middlewares.js";
+import path from "path";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
@@ -15,15 +21,11 @@ import authRouter from "./Routes/Auth.Routes.js";
 
 app.use("/api/v1/auth", authRouter);
 
-app.use((err, req, res, next) => {
-    const statusCode = err.statusCode || 500;
-    const message = err.message || 'Internal Server Error';
-    return res.status(statusCode).json({
-      success: false,
-      statusCode,
-      message,
-    });
-});
+app.use(express.static(path.join(__dirname, "/Frontend/dist")));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "dist", "index.html"));
+})
 
 
 export {app}
